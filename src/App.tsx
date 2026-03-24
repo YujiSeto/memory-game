@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import * as C from './App.styles';
+
 import logoImage from './assets/devmemory_logo.png';
 import resetIcon from './svgs/reset.svg';
+
 import { InfoItem } from './components/InfoItem';
 import { Button } from './components/Button';
 import { GridItemType } from './types/GridItemType';
+
+import { GridItem } from './components/GridItem';
 import { items } from './data/items';
 
 const App = () => {
@@ -41,6 +45,8 @@ const App = () => {
     setPlaying(true);
   };
 
+  const handleItemClick = (index: number) => {};
+
   return (
     <C.Container>
       <C.Info>
@@ -57,7 +63,15 @@ const App = () => {
         <Button label="Reset" icon={resetIcon} onClick={resetAndCreateGrid} />
       </C.Info>
       <C.GridArea>
-        <C.Grid></C.Grid>
+        <C.Grid>
+          {gridItems.map((item, index) => (
+            <GridItem
+              key={index}
+              item={item}
+              onClick={() => handleItemClick(index)}
+            />
+          ))}
+        </C.Grid>
       </C.GridArea>
     </C.Container>
   );
