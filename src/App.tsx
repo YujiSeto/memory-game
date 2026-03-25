@@ -10,20 +10,28 @@ import { GridItemType } from './types/GridItemType';
 
 import { GridItem } from './components/GridItem';
 import { items } from './data/items';
+import { formatTimeElapsed } from './helpers/formatTimeElapsed';
 
 const App = () => {
   const [playing, setPlaying] = useState<boolean>(false);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [moveCount, setMoveCount] = useState<number>(0);
-  const [showCount, setShowCount] = useState<number>(0);
+  const [shownCount, setShownCount] = useState<number>(0);
   const [gridItems, setGridItems] = useState<GridItemType[]>([]);
 
   useEffect(() => resetAndCreateGrid(), []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (playing) setTimeElapsed(timeElapsed + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [playing, timeElapsed]);
+
   const resetAndCreateGrid = () => {
     setTimeElapsed(0);
     setMoveCount(0);
-    setShowCount(0);
+    setShownCount(0);
 
     let tempGrid: GridItemType[] = [];
     for (let i = 0; i < items.length * 2; i++) {
@@ -45,7 +53,19 @@ const App = () => {
     setPlaying(true);
   };
 
-  const handleItemClick = (index: number) => {};
+  const handleItemClick = (index: number) => {
+    if (playing && index !== null && shownCount < 2) {
+      let tmpGrid = [...gridItems];
+      if (
+        tmpGrid[index].permanentShown === false &&
+        tmpGrid[index].shown === false
+      ) {
+        tmpGrid[index].shown = true;
+        setShownCount(shownCount + 1);
+      }
+      setGridItems(tmpGrid);
+    }
+  };
 
   return (
     <C.Container>
@@ -55,7 +75,7 @@ const App = () => {
         </C.LogoLink>
 
         <C.InfoArea>
-          <InfoItem label="Time" value="00:00" />
+          <InfoItem label="Time" value={formatTimeElapsed(timeElapsed)} />
           <InfoItem label="Moves" value="0" />
           <InfoItem label="Matches" value="0" />
         </C.InfoArea>
